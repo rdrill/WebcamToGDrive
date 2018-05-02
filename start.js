@@ -3,7 +3,7 @@ const readline = require('readline');
 const {google} = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
-const TOKEN_PATH = '/root/credentials.json';
+const TOKEN_PATH = '/root/WebcamToGDrive/credentials.json';
 var NodeWebcam = require( "node-webcam" );
 var opts = {
     width: 1280,
@@ -19,7 +19,7 @@ var opts = {
 var Webcam = NodeWebcam.create({});
 
 // Load client secrets from a local file.
-fs.readFile('/root/client_secret.json', (err, content) => {
+fs.readFile('/root/WebcamToGDrive/client_secret.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Drive API.
   authorize(JSON.parse(content), listFiles);
@@ -82,17 +82,26 @@ function listFiles(auth) {
 
   const drive = google.drive({version: 'v3', auth});
 
-
-
   setInterval(function() {
 
-    NodeWebcam.capture( "/root/cp_temp", {}, function( err, data ) {
-        if ( !err ) {
+    NodeWebcam.capture( "/root/cp_lapse", {}, function( err, data ) {
+        if ( !err ){
+          drive.files.create({
+            resource: {
+              name: Date.now()+'.jpg',
+              mimeType: 'image/jpeg',
+              parents: ["15DPIov5BRzExm-oqs52JMXecVtDt1nSy"]
+            },
+            media: {
+              mimeType: 'image/jpeg',
+              body: fs.createReadStream('/root/cp_lapse.jpg') // read streams are awesome!
+            }
+          }, false);
           drive.files.update({
             fileId: '1T360CGHHyaY1Ei5RbPekDkPUiHP4FMit',
             media: {
               mimeType: 'image/jpeg',
-              body: fs.createReadStream('/root/cp_temp.jpg') // read streams are awesome!
+              body: fs.createReadStream('/root/cp_lapse.jpg') // read streams are awesome!
             }
           }, false);
 
@@ -118,24 +127,5 @@ function listFiles(auth) {
         }
     });
 
-  }, 60000);
-  setInterval(function() {
-
-    NodeWebcam.capture( "/root/cp_lapse", {}, function( err, data ) {
-        if ( !err ){
-          drive.files.create({
-            resource: {
-              name: Date.now()+'.jpg',
-              mimeType: 'image/jpeg',
-              parents: ["15DPIov5BRzExm-oqs52JMXecVtDt1nSy"]
-            },
-            media: {
-              mimeType: 'image/jpeg',
-              body: fs.createReadStream('/root/cp_lapse.jpg') // read streams are awesome!
-            }
-          }, false);
-        }
-    });
-
-  }, 61563*30);
+  }, 60000*15);
 }
