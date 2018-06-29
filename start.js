@@ -3,7 +3,7 @@ const readline = require('readline');
 const {google} = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
-const TOKEN_PATH = '/root/WebcamToGDrive/credentials.json';
+const TOKEN_PATH = '/home/greenair/greenairServ/WebCamToGDrive/credentials.json';
 var NodeWebcam = require( "node-webcam" );
 var opts = {
     width: 1280,
@@ -19,7 +19,7 @@ var opts = {
 var Webcam = NodeWebcam.create({});
 
 // Load client secrets from a local file.
-fs.readFile('/root/WebcamToGDrive/client_secret.json', (err, content) => {
+fs.readFile('/home/greenair/greenairServ/WebCamToGDrive/client_secret.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Drive API.
   authorize(JSON.parse(content), listFiles);
@@ -90,7 +90,7 @@ function listFiles(auth) {
             resource: {
               name: Date.now()+'.jpg',
               mimeType: 'image/jpeg',
-              parents: ["15DPIov5BRzExm-oqs52JMXecVtDt1nSy"]
+              parents: ["1KhPQyyDJM_rSCmVNfH-YG-aZWGKG8IWl"]
             },
             media: {
               mimeType: 'image/jpeg',
@@ -98,7 +98,7 @@ function listFiles(auth) {
             }
           }, false);
           drive.files.update({
-            fileId: '1T360CGHHyaY1Ei5RbPekDkPUiHP4FMit',
+            fileId: '15mHf_ykM_JbPyACBAhtyiDdD1G6OBsmJ',
             media: {
               mimeType: 'image/jpeg',
               body: fs.createReadStream('/root/cp_lapse.jpg') // read streams are awesome!
@@ -106,7 +106,7 @@ function listFiles(auth) {
           }, false);
 
           drive.revisions.list({
-            fileId: '1T360CGHHyaY1Ei5RbPekDkPUiHP4FMit',
+            fileId: '15mHf_ykM_JbPyACBAhtyiDdD1G6OBsmJ',
           }, (err, {data}) => {
             if (err) return console.log('The API returned an error: ' + err);
             const revs = data.revisions;
@@ -116,7 +116,7 @@ function listFiles(auth) {
                 for (var i = 0; i < revs.length-1; i++) {
                   console.log(revs[i].id);
                   drive.revisions.delete({
-                    fileId: '1T360CGHHyaY1Ei5RbPekDkPUiHP4FMit',
+                    fileId: '15mHf_ykM_JbPyACBAhtyiDdD1G6OBsmJ',
                     revisionId: revs[i].id
                   }, false);
                 }
@@ -127,5 +127,5 @@ function listFiles(auth) {
         }
     });
 
-  }, 60000*15);
+  }, 30000);
 }
